@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WhatsApp con socket</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Conexión de Socket.IO al servidor
+        var socket = io();
+
+        // Función para enviar mensajes del chat 1
+        function enviarMensaje1() {
+            var mensaje = document.getElementById('mensaje1').value;
+            socket.emit('chat message 1', mensaje);
+            document.getElementById('mensaje1').value = '';
+            return false;
+        }
+
+        // Función para recibir mensajes del chat 1
+        socket.on('chat message 1', function(msg){
+
+            //Renderizacion en el primer chat
+            var chatContainer = document.getElementById('lista-mensajes1');
+            var chatMessageContainer = document.createElement('div');
+            chatMessageContainer.className = 'chat-message-container right';
+
+            var chatMessage = document.createElement('div');
+            chatMessage.className = 'chat-message';
+
+            var chatMessageText = document.createElement('p');
+            chatMessageText.className = 'chat-message-text';
+            chatMessageText.innerText = msg;
+
+            var chatMessageTime = document.createElement('p');
+            chatMessageTime.className = 'chat-message-time';
+            chatMessageTime.innerText = new Date().toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
+
+            chatMessage.appendChild(chatMessageText);
+            chatMessage.appendChild(chatMessageTime);
+            chatMessageContainer.appendChild(chatMessage);
+            chatContainer.appendChild(chatMessageContainer);
+
+            //Renderizacion en segundo chat
+            var chatContainer2 = document.getElementById('lista-mensajes2');
+            var chatMessageContainer2 = document.createElement('div');
+            chatMessageContainer2.className = 'chat-message-container left';
+
+            var chatMessage2 = document.createElement('div');
+            chatMessage2.className = 'chat-message';
+
+            var chatMessageText2 = document.createElement('p');
+            chatMessageText2.className = 'chat-message-text';
+            chatMessageText2.innerText = msg;
+
+            var chatMessageTime2 = document.createElement('p');
+            chatMessageTime2.className = 'chat-message-time';
+            chatMessageTime2.innerText = new Date().toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
+
+            chatMessage2.appendChild(chatMessageText2);
+            chatMessage2.appendChild(chatMessageTime2);
+            chatMessageContainer2.appendChild(chatMessage2);
+            chatContainer2.appendChild(chatMessageContainer2);
+
+        });
+
+        // Función para enviar mensajes del chat 2
+        function enviarMensaje2() {
+            var mensaje = document.getElementById('mensaje2').value;
+            socket.emit('chat message 2', mensaje);
+            document.getElementById('mensaje2').value = '';
+            return false;
+        }
+
+        socket.on('chat message 2' ,function(msg){
+            //Renderizacion en el primer chat
+            var chatContainer = document.getElementById('lista-mensajes2');
+            var chatMessageContainer = document.createElement('div');
+            chatMessageContainer.className = 'chat-message-container right';
+
+            var chatMessage = document.createElement('div');
+            chatMessage.className = 'chat-message';
+
+            var chatMessageText = document.createElement('p');
+            chatMessageText.className = 'chat-message-text';
+            chatMessageText.innerText = msg;
+
+            var chatMessageTime = document.createElement('p');
+            chatMessageTime.className = 'chat-message-time';
+            chatMessageTime.innerText = new Date().toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
+
+            chatMessage.appendChild(chatMessageText);
+            chatMessage.appendChild(chatMessageTime);
+            chatMessageContainer.appendChild(chatMessage);
+            chatContainer.appendChild(chatMessageContainer);
+
+            //Renderizacion en segundo chat
+            var chatContainer2 = document.getElementById('lista-mensajes1');
+            var chatMessageContainer2 = document.createElement('div');
+            chatMessageContainer2.className = 'chat-message-container left';
+
+            var chatMessage2 = document.createElement('div');
+            chatMessage2.className = 'chat-message';
+
+            var chatMessageText2 = document.createElement('p');
+            chatMessageText2.className = 'chat-message-text';
+            chatMessageText2.innerText = msg;
+
+            var chatMessageTime2 = document.createElement('p');
+            chatMessageTime2.className = 'chat-message-time';
+            chatMessageTime2.innerText = new Date().toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
+
+            chatMessage2.appendChild(chatMessageText2);
+            chatMessage2.appendChild(chatMessageTime2);
+            chatMessageContainer2.appendChild(chatMessage2);
+            chatContainer2.appendChild(chatMessageContainer2);
+        });
+
+        function setearDatos1() {
+            var nombre = document.getElementById("user1-name").value
+            var archivo = document.getElementById('user1-image').files[0];
+            var lector = new FileReader();
+            lector.readAsDataURL(archivo);
+            
+            lector.onloadend = function () {
+                var usuario = {nombre, "imagen":lector.result}
+                socket.emit('usuario chat 1',usuario);
+            }
+            return false;
+            
+        }
+
+        socket.on('usuario chat 1', function(user){
+            var nombre = document.getElementById('usuario2Nombre');
+            var imagen = new Image();
+            imagen.src = user.imagen;
+            document.getElementById("usuarioImagen2").src = imagen.src;
+            nombre.textContent = user.nombre;
+        });
+
+
+        
+        function setearDatos() {
+            var nombre = document.getElementById("user2-name").value
+            var archivo = document.getElementById('user2-image').files[0];
+            var lector = new FileReader();
+            lector.readAsDataURL(archivo);
+            
+            lector.onloadend = function () {
+                var usuario = {nombre, "imagen":lector.result}
+                socket.emit('usuario chat 2',usuario);
+            }
+            return false;
+            
+        }
+
+        socket.on('usuario chat 2', function(user){
+            var nombre = document.getElementById('usuario1Nombre');
+            var imagen = new Image();
+            imagen.src = user.imagen;
+            document.getElementById("usuarioImagen1").src = imagen.src;
+            nombre.textContent = user.nombre;
+        });
+
+        
+    </script>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
+
+      .column {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        padding: 20px;
+        text-align: center;
+      }
+      .chat-header {
+        display: flex;
+        width: 100%;
+        height: 70px;
+        background-color: #128c7e;
+        color: #fff;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+      }
+      .user-info {
+        margin: 10px;
+        display: flex;
+        align-items: center;
+      }
+
+      .user-info img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .chat-info {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        margin-left: 4px;
+        color: #fff;
+      }
+
+      .chat-info h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .chat-info span {
+        font-size: 14px;
+        opacity: 0.7;
+      }
+
+      .chat-box {
+        height: 300px;
+        border: 1px solid black;
+        overflow-y: scroll;
+      }
+
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 400px;
+        height: 700px;
+        border-radius: 20px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        background-color: #f2f2f2;
+        padding: 10px;
+      }
+
+      .chat-body {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        background-image: url("https://i.pinimg.com/originals/ae/35/09/ae35091b3482268a1620d6f2ca7c1c0c.jpg");
+      }
+
+      .chat-message-container {
+        display: flex;
+        justify-content: flex-end; /* Cambiar a "flex-end" para alinear a la derecha */
+        align-items: center;
+        margin-bottom: 10px;
+        width: 100%;
+      }
+
+      .chat-message-container.left {
+        justify-content: flex-start;
+        text-align: left;
+      }
+
+      .chat-message-container.right {
+        text-align: left;
+      }
+
+      .chat-message {
+        max-width: 60%;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-message-container.right .chat-message {
+        background-color: #c5e6c1; /* Cambiar a un color diferente */
+      }
+
+      .chat-message-container.left .chat-message {
+        background-color: #fff; /* Cambiar a un color diferente */
+      }
+
+      .chat-message.left {
+        border-radius: 0px 10px 10px 10px;
+      }
+
+      .chat-message-text {
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .chat-message-time {
+        font-size: 12px;
+        color: #777;
+        margin: 5px 0 0;
+        float: right;
+      }
+
+      .chat-input-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 60px; /* Reducir la altura */
+        background-color: #fff;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-input {
+        flex: 1;
+        height: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box;
+      }
+
+      .chat-input-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 100%;
+        background-color: #e7e8e9;
+        color: rgb(96, 96, 96);
+        font-size: 24px;
+        margin-left: 2px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border: none;
+      }
+
+      .chat-input-button img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .chat-input:focus {
+        box-shadow: 0px 0px 5px #128c7e;
+      }
+      /* Estilos para los contenedores de cada formulario */
+.column {
+  display: inline-block;
+  width: 45%;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 10px;
+  box-sizing: border-box;
+}
+
+/* Estilos para los encabezados de cada formulario */
+h2 {
+  font-size: 24px;
+  margin-top: 0;
+}
+
+/* Estilos para las etiquetas de cada campo de formulario */
+label {
+  font-size: 16px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada de texto */
+input[type="text"] {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Estilos para los campos de carga de imagen */
+input[type="file"] {
+  margin-top: 5px;
+}
+
+/* Estilos para los botones de envío */
+button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Estilos para cambiar el cursor cuando se pasa por encima del botón */
+button[type="submit"]:hover {
+  background-color: #3e8e41;
+}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <h2>Usuario 1</h2>
+          <form onsubmit="return setearDatos1()">
+            <label for="user1-name">Nombre:</label>
+            <input type="text" id="user1-name" name="user1-name" /><br /><br />
+            <label for="user1-image">Imagen:</label>
+            <input
+              type="file"
+              id="user1-image"
+            /><br /><br />
+            <button type="submit">Enviar</button>
+          </form>
+        </div>
+        <div class="column">
+          <h2>Usuario 2</h2>
+          <form onsubmit="return setearDatos()">
+            <label for="user2-name">Nombre:</label>
+            <input type="text" id="user2-name" name="user2-name" /><br /><br />
+            <label for="user2-image">Imagen:</label>
+            <input
+              type="file"
+              id="user2-image"
+            /><br /><br />
+            <button type="submit">Enviar</button>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="column">
+          <h2>Chat de WhatsApp 1</h2>
+          <div class="chat-container">
+            <div class="chat-header">
+              <div class="user-info">
+                <img id="usuarioImagen1" alt="Tu imagen de perfil" />
+                <div class="chat-info">
+                  <h2 id="usuario1Nombre">Nombre de usuario</h2>
+                  <span>en línea</span>
+                </div>
+              </div>
+            </div>
+            <div class="chat-body" id="lista-mensajes1">
+            </div>
+            <form class="chat-input-container" onsubmit="return enviarMensaje1()">
+              <input
+                type="text"
+                class="chat-input"
+                placeholder="Escribe un mensaje..."
+                id="mensaje1"
+                autocomplete="off"
+              />
+              <button class="chat-input-button">
+                <svg
+                  viewBox="0 0 24 24"
+                  height="24"
+                  width="24"
+                  preserveAspectRatio="xMidYMid meet"
+                  class=""
+                  version="1.1"
+                  x="0px"
+                  y="0px"
+                  enable-background="new 0 0 24 24"
+                  xml:space="preserve"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M1.101,21.757L23.8,12.028L1.101,2.3l0.011,7.912l13.623,1.816L1.112,13.845 L1.101,21.757z"
+                  ></path>
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="column">
+          <h2>Chat de WhatsApp 2</h2>
+          <div class="chat-container">
+            <div class="chat-header">
+              <div class="user-info">
+                <img id="usuarioImagen2" alt="Tu imagen de perfil" />
+                <div class="chat-info">
+                  <h2 id="usuario2Nombre">Nombre de usuario</h2>
+                  <span>en línea</span>
+                </div>
+              </div>
+            </div>
+            <div class="chat-body" id="lista-mensajes2">
+            </div>
+            <form class="chat-input-container" onsubmit="return enviarMensaje2()">
+              <input
+                type="text"
+                class="chat-input"
+                placeholder="Escribe un mensaje..."
+                id="mensaje2"
+                autocomplete="off"
+              />
+              <button class="chat-input-button">
+                <svg
+                  viewBox="0 0 24 24"
+                  height="24"
+                  width="24"
+                  preserveAspectRatio="xMidYMid meet"
+                  class=""
+                  version="1.1"
+                  x="0px"
+                  y="0px"
+                  enable-background="new 0 0 24 24"
+                  xml:space="preserve"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M1.101,21.757L23.8,12.028L1.101,2.3l0.011,7.912l13.623,1.816L1.112,13.845 L1.101,21.757z"
+                  ></path>
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
